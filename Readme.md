@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Aleksy Anishchenko](https://up.htmlacademy.ru/javascript/31/user/1848665).
-* Наставник: `Неизвестно`.
+* Наставник: [Ольга Ветер](https://up.htmlacademy.ru/adaptive/30/user/73199).
 
 ---
 
