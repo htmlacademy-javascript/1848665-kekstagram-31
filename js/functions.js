@@ -13,4 +13,4 @@ const isValidPalindrome = function (string) {
   return formattedString === emptyString;
 };
 
-console.log(isValidPalindrome('До вОд'));
+isValidPalindrome('До вОд');
