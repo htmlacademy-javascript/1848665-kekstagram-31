@@ -1,9 +1,10 @@
-import { getArrayPhotoDescriptions } from './create-array-photo-descriptions.js';
+import { createArrayPhotoDescriptions } from './create-array-photo-descriptions.js';
 import { checkMeetingTime } from './functions.js';
+import './create-photo-descriptions.js';
 
 // eslint-disable-next-line
 console.log(
-  getArrayPhotoDescriptions()
+  createArrayPhotoDescriptions()
 );
 // eslint-disable-next-line
 console.log(

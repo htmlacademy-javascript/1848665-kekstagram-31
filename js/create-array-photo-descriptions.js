@@ -3,11 +3,8 @@ import {
   getRandomArrayElement,
   createIdGenerator,
 } from './util.js';
-import { getDataArrayPhotoDescriptions } from './data.js';
+import { DESCRIPTIONS, MESSEAGES, NAMES } from './data.js';
 
-const { DESCRIPTIONS, MESSEAGES, NAMES } = getDataArrayPhotoDescriptions();
-
-const OBJECT_COUNT = 25;
 const MINIMUM_COUNT_LIKES = 15;
 const MAXIMUM_COUNT_LIKES = 200;
 const MAXIMUM_COUNT_AVATARS = 6;
@@ -35,6 +32,6 @@ const createPhotoDescriptions = () => ({
 });
 
 // Создание массива описаний фотографий пользователей
-const getArrayPhotoDescriptions = () => Array.from({length: OBJECT_COUNT}, createPhotoDescriptions);
+const createArrayPhotoDescriptions = (COUNT) => Array.from({length: COUNT}, createPhotoDescriptions);
 
-export { getArrayPhotoDescriptions };
+export { createArrayPhotoDescriptions };
