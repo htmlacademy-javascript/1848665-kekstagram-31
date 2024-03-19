@@ -10,8 +10,9 @@ const arrayPhotoDescriptions = createArrayPhotoDescriptions(25);
 
 const photoCardListFragment = document.createDocumentFragment();
 
-arrayPhotoDescriptions.forEach(({url, description, likes, comments}) => {
+arrayPhotoDescriptions.forEach(({id, url, description, likes, comments}) => {
   const photoCard = templatePhotoCard.cloneNode(true);
+  photoCard.querySelector('.picture__img').setAttribute('data-photo-id', id);
   photoCard.querySelector('.picture__img').src = url;
   photoCard.querySelector('.picture__img').alt = description;
   photoCard.querySelector('.picture__likes').textContent = likes;
@@ -21,4 +22,8 @@ arrayPhotoDescriptions.forEach(({url, description, likes, comments}) => {
 
 // Добавление фрамента с карточками фотографий в список карточек фотографий
 
-photoCardList.appendChild(photoCardListFragment);
+const createPhotoCard = () => {
+  photoCardList.appendChild(photoCardListFragment);
+};
+
+export { createPhotoCard };
