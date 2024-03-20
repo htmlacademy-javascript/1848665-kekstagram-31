@@ -1,5 +1,5 @@
 // Получение рандомного числа из диапазона
-const getRandomInteger = (a, b) => {
+const generateRandomInteger = (a, b) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
   const result = Math.random() * (upper - lower + 1) + lower;
@@ -7,10 +7,10 @@ const getRandomInteger = (a, b) => {
 };
 
 // Получение случайного элемента массива
-const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
+const generateRandomArrayElement = (elements) => elements[generateRandomInteger(0, elements.length - 1)];
 
 // Счетчик на замыкании
-const createIdGenerator = () => {
+const generateRandomId = () => {
   let lastGeneratedId = 0;
   return function () {
     lastGeneratedId += 1;
@@ -18,4 +18,4 @@ const createIdGenerator = () => {
   };
 };
 
-export { getRandomInteger, getRandomArrayElement, createIdGenerator };
+export { generateRandomInteger, generateRandomArrayElement, generateRandomId };
