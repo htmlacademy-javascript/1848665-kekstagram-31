@@ -1,4 +1,9 @@
-import { createPhotoCard } from './create-photo-descriptions.js';
-import './viewing-photo.js';
+import { openBigPicture } from './picture-modal.js';
+import { thumbnailList } from './render-thumbnails.js';
 
-createPhotoCard();
+thumbnailList.addEventListener('click', (evt) => {
+  const currentThumbnail = evt.target.closest('.picture');
+  if (currentThumbnail) {
+    openBigPicture(currentThumbnail.dataset.pictureId);
+  }
+});
