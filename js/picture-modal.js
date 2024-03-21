@@ -1,39 +1,29 @@
 import { thumbnailArray } from './render-thumbnails.js';
+import { clearComments, renderComments } from './render-comments.js';
 
 const bigPicture = document.querySelector('.big-picture');
 const imgPicture = bigPicture.querySelector('.big-picture__img').querySelector('img');
 const countLikes = bigPicture.querySelector('.likes-count');
 const descriptionPicture = bigPicture.querySelector('.social__caption');
-const commentsList = bigPicture.querySelector('.social__comments');
-const templateComment = document.querySelector('#comment').content.querySelector('.social__comment');
-const countComments = bigPicture.querySelector('.social__comment-count');
-const countShownComments = bigPicture.querySelector('.social__comment-shown-count');
-const totalComments = bigPicture.querySelector('.social__comment-total-count');
-const commentUploadButton = bigPicture.querySelector('.comments-loader');
 const cancelButton = bigPicture.querySelector('.big-picture__cancel');
+const totalComments = bigPicture.querySelector('.social__comment-total-count');
 
 // Событие отображения модального окна
 const openBigPicture = (pictureId) => {
   // Получение обьекта выбранной миниатюры с массива
   const currentThumbnail = thumbnailArray.find((num) => num.id === Number(pictureId));
 
+  // Отчистка комментариев
+  clearComments();
+
+  // Добавление комментариев
+  renderComments(currentThumbnail.comments);
+
   // Заполнение данных в модальном окне
   imgPicture.src = currentThumbnail.url;
   countLikes.textContent = currentThumbnail.likes;
   descriptionPicture.textContent = currentThumbnail.description;
-  commentsList.innerHTML = '';
-  // Добавление комментариев
-  const socialCommentsFragment = document.createDocumentFragment();
-
-  currentThumbnail.comments.forEach((comment) => {
-    const newComment = templateComment.cloneNode(true);
-    newComment.querySelector('.social__picture').src = comment.avatar;
-    newComment.querySelector('.social__picture').alt = comment.name;
-    newComment.querySelector('.social__text').textContent = comment.message;
-    socialCommentsFragment.appendChild(newComment);
-  });
-
-  commentsList.appendChild(socialCommentsFragment);
+  totalComments.textContent = currentThumbnail.comments.length;
 
   // Отображение модального окна
   bigPicture.classList.remove('hidden');
@@ -51,12 +41,6 @@ const openBigPicture = (pictureId) => {
       bigPicture.classList.add('hidden');
     }
   });
-
-  // Скрытие блока с количеством комментариев
-  countComments.classList.add('hidden');
-  countShownComments.classList.add('hidden');
-  totalComments.classList.add('hidden');
-  commentUploadButton.classList.add('hidden');
 };
 
 export { openBigPicture };
