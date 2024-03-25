@@ -8,7 +8,7 @@ import { DESCRIPTIONS, MESSEAGES, NAMES } from './data.js';
 const MINIMUM_COUNT_LIKES = 15;
 const MAXIMUM_COUNT_LIKES = 200;
 const MAXIMUM_COUNT_AVATARS = 6;
-const MAXIMUM_COUNT_COMMENTS = 6;
+const MAXIMUM_COUNT_COMMENTS = 30;
 
 const generateCommentId = generateRandomId();
 const generateThumbnailId = generateRandomId();
