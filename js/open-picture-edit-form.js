@@ -1,4 +1,4 @@
-import './effects-slider.js';
+import { sliderElement, effectOptions, renderEffect } from './effects-slider.js';
 
 const MAX_HASHTAGS_COUNT = 5;
 const MIN_SCALE = 25;
@@ -15,6 +15,12 @@ const scaleDownButton = formNode.querySelector('.scale__control--smaller');
 const scaleUpButton = formNode.querySelector('.scale__control--bigger');
 const scaleControl = formNode.querySelector('.scale__control--value');
 const picturePreview = formNode.querySelector('.img-upload__preview img');
+const effectNone = document.querySelector('#effect-none');
+const effectChrome = document.querySelector('#effect-chrome');
+const effectSepia = document.querySelector('#effect-sepia');
+const effectMarvin = document.querySelector('#effect-marvin');
+const effectPhobos = document.querySelector('#effect-phobos');
+const effectHeat = document.querySelector('#effect-heat');
 
 const hashtagRegex = /^#[a-zа-яё0-9]{1,19}$/i;
 const isFieldFocused = () => document.activeElement === hashtagInput || document.activeElement === descriptionInput;
@@ -28,6 +34,11 @@ const openPictureEditForm = () => {
   cancelButton.addEventListener('click', () => {
     pictureUploadForm.classList.add('hidden');
     formNode.reset();
+
+    picturePreview.style.filter = 'none';
+    if (sliderElement.noUiSlider) {
+      sliderElement.noUiSlider.destroy();
+    }
   });
 
   document.addEventListener('keydown', (evt) => {
@@ -35,7 +46,31 @@ const openPictureEditForm = () => {
       evt.preventDefault();
       pictureUploadForm.classList.add('hidden');
       formNode.reset();
+
+      picturePreview.style.filter = 'none';
+      if (sliderElement.noUiSlider) {
+        sliderElement.noUiSlider.destroy();
+      }
     }
+  });
+
+  effectNone.addEventListener('change', () => {
+    renderEffect('none', effectOptions.none);
+  });
+  effectChrome.addEventListener('change', () => {
+    renderEffect('grayscale', effectOptions.chrome);
+  });
+  effectSepia.addEventListener('change', () => {
+    renderEffect('sepia', effectOptions.sepia);
+  });
+  effectMarvin.addEventListener('change', () => {
+    renderEffect('invert', effectOptions.marvin);
+  });
+  effectPhobos.addEventListener('change', () => {
+    renderEffect('blur', effectOptions.phobos);
+  });
+  effectHeat.addEventListener('change', () => {
+    renderEffect('brightness', effectOptions.heat);
   });
 };
 

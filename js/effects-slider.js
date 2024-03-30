@@ -2,29 +2,10 @@ const sliderContainer = document.querySelector('.img-upload__effect-level');
 const sliderElement = sliderContainer.querySelector('.effect-level__slider');
 const sliderInput = sliderContainer.querySelector('.effect-level__value');
 const picturePreview = document.querySelector('.img-upload__preview img');
-const effectNone = document.querySelector('#effect-none');
-const effectChrome = document.querySelector('#effect-chrome');
-const effectSepia = document.querySelector('#effect-sepia');
-const effectMarvin = document.querySelector('#effect-marvin');
-const effectPhobos = document.querySelector('#effect-phobos');
-const effectHeat = document.querySelector('#effect-heat');
 
-// Применение эффекта "Оригинал"
-const renderEffectNone = () => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-    picturePreview.style.filter = 'none';
-  }
-};
-
-// Применение эффекта "Хром"
-const renderEffectChrome = () => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-    picturePreview.style.filter = 'none';
-  }
-
-  noUiSlider.create(sliderElement, {
+const effectOptions = {
+  none: {},
+  chrome: {
     range: {
       min: 0,
       max: 1,
@@ -43,23 +24,8 @@ const renderEffectChrome = () => {
         return parseFloat(value);
       },
     },
-  });
-
-  sliderElement.noUiSlider.on('update', () => {
-    const currentCount = sliderElement.noUiSlider.get();
-    sliderInput.value = currentCount;
-    picturePreview.style.filter = `grayscale(${currentCount})`;
-  });
-};
-
-// Применение эффекта "Сепия"
-const renderEffectSepia = () => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-    picturePreview.style.filter = 'none';
-  }
-
-  noUiSlider.create(sliderElement, {
+  },
+  sepia: {
     range: {
       min: 0,
       max: 1,
@@ -78,23 +44,8 @@ const renderEffectSepia = () => {
         return parseFloat(value);
       },
     },
-  });
-
-  sliderElement.noUiSlider.on('update', () => {
-    const currentCount = sliderElement.noUiSlider.get();
-    sliderInput.value = currentCount;
-    picturePreview.style.filter = `sepia(${currentCount})`;
-  });
-};
-
-// Применение эффекта "Марвин"
-const renderEffectMarvin = () => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-    picturePreview.style.filter = 'none';
-  }
-
-  noUiSlider.create(sliderElement, {
+  },
+  marvin: {
     range: {
       min: 0,
       max: 100,
@@ -110,23 +61,9 @@ const renderEffectMarvin = () => {
         return parseFloat(value);
       },
     },
-  });
-
-  sliderElement.noUiSlider.on('update', () => {
-    const currentCount = sliderElement.noUiSlider.get();
-    sliderInput.value = currentCount;
-    picturePreview.style.filter = `invert(${currentCount}%)`;
-  });
-};
-
-// Применение эффекта "Фобос"
-const renderEffectPhobos = () => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-    picturePreview.style.filter = 'none';
-  }
-
-  noUiSlider.create(sliderElement, {
+    suffix: '%',
+  },
+  phobos: {
     range: {
       min: 0,
       max: 3,
@@ -145,23 +82,9 @@ const renderEffectPhobos = () => {
         return parseFloat(value);
       },
     },
-  });
-
-  sliderElement.noUiSlider.on('update', () => {
-    const currentCount = sliderElement.noUiSlider.get();
-    sliderInput.value = currentCount;
-    picturePreview.style.filter = `blur(${currentCount}px)`;
-  });
-};
-
-// Применение эффекта "Зной"
-const renderEffectHeat = () => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-    picturePreview.style.filter = 'none';
-  }
-
-  noUiSlider.create(sliderElement, {
+    suffix: 'px',
+  },
+  heat: {
     range: {
       min: 1,
       max: 3,
@@ -180,18 +103,28 @@ const renderEffectHeat = () => {
         return parseFloat(value);
       },
     },
-  });
+  },
+};
+
+const renderEffect = (effectName, options) => {
+  if (effectName === 'none') {
+    picturePreview.style.filter = 'none';
+    if (sliderElement.noUiSlider) {
+      sliderElement.noUiSlider.destroy();
+    }
+    return;
+  }
+  if (sliderElement.noUiSlider) {
+    sliderElement.noUiSlider.destroy();
+  }
+
+  noUiSlider.create(sliderElement, options);
 
   sliderElement.noUiSlider.on('update', () => {
     const currentCount = sliderElement.noUiSlider.get();
     sliderInput.value = currentCount;
-    picturePreview.style.filter = `brightness(${currentCount})`;
+    picturePreview.style.filter = `${effectName}(${currentCount}${options.suffix || ''})`;
   });
 };
 
-effectNone.addEventListener('change', renderEffectNone);
-effectChrome.addEventListener('change', renderEffectChrome);
-effectSepia.addEventListener('change', renderEffectSepia);
-effectMarvin.addEventListener('change', renderEffectMarvin);
-effectPhobos.addEventListener('change', renderEffectPhobos);
-effectHeat.addEventListener('change', renderEffectHeat);
+export { sliderElement, effectOptions, renderEffect };
