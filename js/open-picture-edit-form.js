@@ -1,14 +1,9 @@
-/*
-1. Реализовавать отображение формы редактирования изображения после выбора изображения для загрузки
+import { sliderElement, effectOptions, renderEffect } from './effects-slider.js';
 
-2. Реализовать закрытие формы редактирования изображения
-2.1 Реализовать сброс значения выбранной фотографии
-2.2 Реализовать сброс остальных полей формы
-
-3. Реализовать валидацию формы:
-3.1 Реализовать валидацию поля Хэштеги
-3.2 Реализовать валидацию поля Комментарий
-*/
+const MAX_HASHTAGS_COUNT = 5;
+const MIN_SCALE = 25;
+const MAX_SCALE = 100;
+const COUNT_STEP = 25;
 
 const formNode = document.querySelector('.img-upload__form');
 const pictureUploadForm = formNode.querySelector('.img-upload__overlay');
@@ -16,68 +11,145 @@ const pictureUploadInput = formNode.querySelector('.img-upload__input');
 const cancelButton = formNode.querySelector('.img-upload__cancel');
 const hashtagInput = formNode.querySelector('.text__hashtags');
 const descriptionInput = formNode.querySelector('.text__description');
+const scaleDownButton = formNode.querySelector('.scale__control--smaller');
+const scaleUpButton = formNode.querySelector('.scale__control--bigger');
+const scaleControl = formNode.querySelector('.scale__control--value');
+const uploadedPicture = document.querySelector('.img-upload__preview img');
+const effectNone = document.querySelector('#effect-none');
+const effectChrome = document.querySelector('#effect-chrome');
+const effectSepia = document.querySelector('#effect-sepia');
+const effectMarvin = document.querySelector('#effect-marvin');
+const effectPhobos = document.querySelector('#effect-phobos');
+const effectHeat = document.querySelector('#effect-heat');
 
-// Проверка фокуса на полях формы
+const hashtagRegex = /^#[a-zа-яё0-9]{1,19}$/i;
 const isFieldFocused = () => document.activeElement === hashtagInput || document.activeElement === descriptionInput;
 
+// Отображение формы
 const openPictureEditForm = () => {
-  // Отображение формы
   pictureUploadForm.classList.remove('hidden');
   document.body.classList.add('.modal-open');
 
-  // Обработчик закрытия формы по кнопке
+  // Обработчики закрытия формы
   cancelButton.addEventListener('click', () => {
     pictureUploadForm.classList.add('hidden');
     formNode.reset();
+
+    uploadedPicture.style.filter = 'none';
+    if (sliderElement.noUiSlider) {
+      sliderElement.noUiSlider.destroy();
+    }
   });
 
-  // Обработчик закрытия формы по клавише
   document.addEventListener('keydown', (evt) => {
     if (evt.key === 'Escape' && !isFieldFocused()) {
       evt.preventDefault();
       pictureUploadForm.classList.add('hidden');
       formNode.reset();
+
+      uploadedPicture.style.filter = 'none';
+      if (sliderElement.noUiSlider) {
+        sliderElement.noUiSlider.destroy();
+      }
     }
+  });
+
+  effectNone.addEventListener('change', () => {
+    renderEffect('none', effectOptions.none);
+  });
+  effectChrome.addEventListener('change', () => {
+    renderEffect('grayscale', effectOptions.chrome);
+  });
+  effectSepia.addEventListener('change', () => {
+    renderEffect('sepia', effectOptions.sepia);
+  });
+  effectMarvin.addEventListener('change', () => {
+    renderEffect('invert', effectOptions.marvin);
+  });
+  effectPhobos.addEventListener('change', () => {
+    renderEffect('blur', effectOptions.phobos);
+  });
+  effectHeat.addEventListener('change', () => {
+    renderEffect('brightness', effectOptions.heat);
   });
 };
 
-// Валидация формы редактирования фотографии
+// Валидация формы
 const pristine = new Pristine(formNode, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextClass: 'img-upload__field-wrapper--error',
 });
 
-// Валидация поля hashtags
-const isValidHashtags = (hashtags) => {
-  /* Регулярное выражение проверяет, что строка содержит от 1 до 5 уникальных хэштегов, где каждый хэштег состоит из символа решетки #,
-  за которым следует от 1 до 19 латинских или русских букв или цифр, а также может быть необязательный пробельный символ между хэштегами */
-  const hashtagRegex = /^(?:(?!.*?(\b\w+\b)(?=.*?\1))(#[a-zа-яё0-9]{1,19}\s?)){1,5}$/i;
-  return hashtagRegex.test(hashtags);
+const isValidHashtag = (hashtags) => {
+  const arrayHashtags = hashtags.split(' ').filter(Boolean);
+  return arrayHashtags.every((hashtag) => hashtagRegex.test(hashtag));
 };
 
-pristine.addValidator(
-  hashtagInput,
-  isValidHashtags,
-  'Введен некорректный хэштег'
-);
+const isValidQuantityHashtags = (hashtags) => {
+  const arrayHashtags = hashtags.split(' ').filter(Boolean);
+  return arrayHashtags.length <= MAX_HASHTAGS_COUNT;
+};
 
-// Валидация поля description
+const areValidUniqueHashtags = (hashtags) => {
+  const arrayHashtags = hashtags.split(' ').filter(Boolean);
+  const arrayUniqueHashtags = new Set(arrayHashtags);
+  return arrayHashtags.length === arrayUniqueHashtags.size;
+};
+
 const isValidDescription = (description) => {
-  // Регулярное выражение проверяет, что строка содержит от 0 до 140 символов
   const descriptionRegex = /.{0,140}/;
   return descriptionRegex.test(description);
 };
 
 pristine.addValidator(
+  hashtagInput,
+  isValidHashtag,
+  'Введён невалидный хэштег'
+);
+
+pristine.addValidator(
+  hashtagInput,
+  isValidQuantityHashtags,
+  'Превышено количество введенных хэштегов'
+);
+
+pristine.addValidator(
+  hashtagInput,
+  areValidUniqueHashtags,
+  'Введенные хэштеги повторяются'
+);
+
+pristine.addValidator(
   descriptionInput,
   isValidDescription,
-  'Максимальная длина комментария 140 символов'
+  'Максимальная длина введенного комментария 140 символов'
 );
 
 formNode.addEventListener('submit', (evt) => {
   evt.preventDefault();
   pristine.validate();
+});
+
+// Изменение масштаба изображения
+scaleDownButton.addEventListener('click', () => {
+  let currentScale = parseFloat(scaleControl.value);
+  if (currentScale !== MIN_SCALE) {
+    currentScale -= COUNT_STEP;
+  }
+  scaleControl.value = `${currentScale}%`;
+  scaleControl.setAttribute('value', `${currentScale}%`);
+  uploadedPicture.style.transform = `scale(${currentScale / 100})`;
+});
+
+scaleUpButton.addEventListener('click', () => {
+  let currentScale = parseFloat(scaleControl.value);
+  if (currentScale !== MAX_SCALE) {
+    currentScale += COUNT_STEP;
+  }
+  scaleControl.value = `${currentScale}%`;
+  scaleControl.setAttribute('value', `${currentScale}%`);
+  uploadedPicture.style.transform = `scale(${currentScale / 100})`;
 });
 
 export { pictureUploadInput, openPictureEditForm };

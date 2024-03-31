@@ -1,14 +1,11 @@
 import { generateThumbnailArray } from './thumbnail-array-generator.js';
 
-// Количество генерируемых миниатюр
 const OBJECT_COUNT = 25;
 
-// Получение шаблона миниатюры
 const thumbnailList = document.querySelector('.pictures');
 const templateThumbnail = document.querySelector('#picture').content.querySelector('.picture');
 
 // Заполнение миниатюры данными и добавление ее в фрагмент
-
 const thumbnailArray = generateThumbnailArray(OBJECT_COUNT);
 
 const thumbnailCardListFragment = document.createDocumentFragment();
