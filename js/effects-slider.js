@@ -1,7 +1,6 @@
-const sliderContainer = document.querySelector('.img-upload__effect-level');
-const sliderElement = sliderContainer.querySelector('.effect-level__slider');
-const sliderInput = sliderContainer.querySelector('.effect-level__value');
-const picturePreview = document.querySelector('.img-upload__preview img');
+const sliderElement = document.querySelector('.effect-level__slider');
+const sliderInput = document.querySelector('.effect-level__value');
+const uploadedPicture = document.querySelector('.img-upload__preview img');
 
 const effectOptions = {
   none: {},
@@ -108,7 +107,7 @@ const effectOptions = {
 
 const renderEffect = (effectName, options) => {
   if (effectName === 'none') {
-    picturePreview.style.filter = 'none';
+    uploadedPicture.style.filter = 'none';
     if (sliderElement.noUiSlider) {
       sliderElement.noUiSlider.destroy();
     }
@@ -123,7 +122,7 @@ const renderEffect = (effectName, options) => {
   sliderElement.noUiSlider.on('update', () => {
     const currentCount = sliderElement.noUiSlider.get();
     sliderInput.value = currentCount;
-    picturePreview.style.filter = `${effectName}(${currentCount}${options.suffix || ''})`;
+    uploadedPicture.style.filter = `${effectName}(${currentCount}${options.suffix || ''})`;
   });
 };
 

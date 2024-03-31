@@ -14,7 +14,7 @@ const descriptionInput = formNode.querySelector('.text__description');
 const scaleDownButton = formNode.querySelector('.scale__control--smaller');
 const scaleUpButton = formNode.querySelector('.scale__control--bigger');
 const scaleControl = formNode.querySelector('.scale__control--value');
-const picturePreview = formNode.querySelector('.img-upload__preview img');
+const uploadedPicture = document.querySelector('.img-upload__preview img');
 const effectNone = document.querySelector('#effect-none');
 const effectChrome = document.querySelector('#effect-chrome');
 const effectSepia = document.querySelector('#effect-sepia');
@@ -35,7 +35,7 @@ const openPictureEditForm = () => {
     pictureUploadForm.classList.add('hidden');
     formNode.reset();
 
-    picturePreview.style.filter = 'none';
+    uploadedPicture.style.filter = 'none';
     if (sliderElement.noUiSlider) {
       sliderElement.noUiSlider.destroy();
     }
@@ -47,7 +47,7 @@ const openPictureEditForm = () => {
       pictureUploadForm.classList.add('hidden');
       formNode.reset();
 
-      picturePreview.style.filter = 'none';
+      uploadedPicture.style.filter = 'none';
       if (sliderElement.noUiSlider) {
         sliderElement.noUiSlider.destroy();
       }
@@ -139,7 +139,7 @@ scaleDownButton.addEventListener('click', () => {
   }
   scaleControl.value = `${currentScale}%`;
   scaleControl.setAttribute('value', `${currentScale}%`);
-  picturePreview.style.transform = `scale(${currentScale / 100})`;
+  uploadedPicture.style.transform = `scale(${currentScale / 100})`;
 });
 
 scaleUpButton.addEventListener('click', () => {
@@ -149,7 +149,7 @@ scaleUpButton.addEventListener('click', () => {
   }
   scaleControl.value = `${currentScale}%`;
   scaleControl.setAttribute('value', `${currentScale}%`);
-  picturePreview.style.transform = `scale(${currentScale / 100})`;
+  uploadedPicture.style.transform = `scale(${currentScale / 100})`;
 });
 
 export { pictureUploadInput, openPictureEditForm };
