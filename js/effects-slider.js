@@ -1,10 +1,14 @@
-const sliderElement = document.querySelector('.effect-level__slider');
+const slider = document.querySelector('.effect-level__slider');
 const sliderInput = document.querySelector('.effect-level__value');
 const uploadedPicture = document.querySelector('.img-upload__preview img');
+const sliderContainer = document.querySelector('.effect-level');
 
 const effectOptions = {
-  none: {},
-  chrome: {
+  none: {
+    name: 'none',
+  },
+  chrome:{
+    name: 'chrome',
     range: {
       min: 0,
       max: 1,
@@ -23,8 +27,10 @@ const effectOptions = {
         return parseFloat(value);
       },
     },
+    style: 'grayscale',
   },
   sepia: {
+    name: 'sepia',
     range: {
       min: 0,
       max: 1,
@@ -43,8 +49,10 @@ const effectOptions = {
         return parseFloat(value);
       },
     },
+    style: 'sepia',
   },
   marvin: {
+    name: 'marvin',
     range: {
       min: 0,
       max: 100,
@@ -61,8 +69,10 @@ const effectOptions = {
       },
     },
     suffix: '%',
+    style: 'invert',
   },
   phobos: {
+    name: 'phobos',
     range: {
       min: 0,
       max: 3,
@@ -82,8 +92,10 @@ const effectOptions = {
       },
     },
     suffix: 'px',
+    style: 'blur',
   },
   heat: {
+    name: 'heat',
     range: {
       min: 1,
       max: 3,
@@ -102,28 +114,31 @@ const effectOptions = {
         return parseFloat(value);
       },
     },
+    style: 'brightness',
   },
 };
 
-const renderEffect = (effectName, options) => {
-  if (effectName === 'none') {
+const renderEffect = (effect) => {
+  if (effect.name === 'none') {
     uploadedPicture.style.filter = 'none';
-    if (sliderElement.noUiSlider) {
-      sliderElement.noUiSlider.destroy();
+    sliderContainer.classList.add('hidden');
+
+    if (slider.noUiSlider) {
+      slider.noUiSlider.destroy();
     }
     return;
   }
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
+  if (slider.noUiSlider) {
+    slider.noUiSlider.destroy();
   }
+  sliderContainer.classList.remove('hidden');
+  noUiSlider.create(slider, effect);
 
-  noUiSlider.create(sliderElement, options);
-
-  sliderElement.noUiSlider.on('update', () => {
-    const currentCount = sliderElement.noUiSlider.get();
+  slider.noUiSlider.on('update', () => {
+    const currentCount = slider.noUiSlider.get();
     sliderInput.value = currentCount;
-    uploadedPicture.style.filter = `${effectName}(${currentCount}${options.suffix || ''})`;
+    uploadedPicture.style.filter = `${effect.style}(${currentCount}${effect.suffix || ''})`;
   });
 };
 
-export { sliderElement, effectOptions, renderEffect };
+export { slider, effectOptions, renderEffect };
