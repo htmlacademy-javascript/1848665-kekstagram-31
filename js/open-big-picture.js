@@ -1,4 +1,4 @@
-import { thumbnailArray } from './render-thumbnails.js';
+import { data } from './data.js';
 import { clearComments, renderComments } from './render-comments.js';
 
 const bigPicture = document.querySelector('.big-picture');
@@ -11,7 +11,7 @@ const totalComments = bigPicture.querySelector('.social__comment-total-count');
 // Событие отображения модального окна
 const openBigPicture = (pictureId) => {
   // Получение обьекта выбранной миниатюры с массива
-  const currentThumbnail = thumbnailArray.find((num) => num.id === Number(pictureId));
+  const currentThumbnail = data.find((num) => num.id === Number(pictureId));
 
   // Отчистка комментариев
   clearComments();

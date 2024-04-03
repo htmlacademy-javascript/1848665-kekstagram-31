@@ -1,7 +1,14 @@
+import { data } from './data.js';
+import { renderThumbnails } from './render-thumbnails.js';
 import { openBigPicture } from './open-big-picture.js';
-import { thumbnailList } from './render-thumbnails.js';
-import { pictureUploadInput, openPictureEditForm } from './open-picture-edit-form.js';
+import { pictureUploadInput, openPictureForm, closePictureForm, setPictureFormSubmit } from './picture-form.js';
 
+const thumbnailList = document.querySelector('.pictures');
+
+// Функция отрисовки полученных миниатюр
+renderThumbnails(data);
+
+// Обработчик нажатия на миниатюру
 thumbnailList.addEventListener('click', (evt) => {
   const currentThumbnail = evt.target.closest('.picture');
   if (currentThumbnail) {
@@ -9,9 +16,13 @@ thumbnailList.addEventListener('click', (evt) => {
   }
 });
 
+// Обработчик открытия формы
 pictureUploadInput.addEventListener('change', (evt) => {
   const selectedPicture = evt.target.files[0];
   if (selectedPicture) {
-    openPictureEditForm(selectedPicture);
+    openPictureForm(selectedPicture);
   }
 });
+
+// Функция отправки формы
+setPictureFormSubmit(closePictureForm);
