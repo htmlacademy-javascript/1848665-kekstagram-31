@@ -1,15 +1,11 @@
+import { isEscapeKey, sendAlert, sendErrorAlert } from './util.js';
 import { slider, effectOptions, renderEffect } from './effects-slider.js';
 import { sendData } from './api.js';
-
-const MAX_HASHTAGS_COUNT = 5;
-const MIN_SCALE = 25;
-const MAX_SCALE = 100;
-const COUNT_STEP = 25;
 
 const formNode = document.querySelector('.img-upload__form');
 const pictureUploadForm = formNode.querySelector('.img-upload__overlay');
 const pictureUploadInput = formNode.querySelector('.img-upload__input');
-const cancelButton = formNode.querySelector('.img-upload__cancel');
+const pictureFormCancelButton = formNode.querySelector('.img-upload__cancel');
 const hashtagInput = formNode.querySelector('.text__hashtags');
 const descriptionInput = formNode.querySelector('.text__description');
 const scaleDownButton = formNode.querySelector('.scale__control--smaller');
@@ -18,13 +14,42 @@ const scaleControl = formNode.querySelector('.scale__control--value');
 const sliderContainer = document.querySelector('.effect-level');
 const effectContainer = document.querySelector('.effects');
 const uploadedPicture = document.querySelector('.img-upload__preview img');
+const submitButton = document.querySelector('.img-upload__submit');
 
+// Дополнительное состояние кнопки
+const SubmitButtonText = {
+  IDLE: 'Опубликовать',
+  SENDING: 'Публикую...'
+};
+
+// Максимальное количество хештегов
+const MAX_HASHTAGS_COUNT = 5;
+
+// Настройки изменения масштаба изображения
+const MIN_SCALE = 25;
+const MAX_SCALE = 100;
+const COUNT_STEP = 25;
+
+// Регулярное выражение для валидации одного хештега
 const hashtagRegex = /^#[a-zа-яё0-9]{1,19}$/i;
+
+// Функция для проверки фокуса на полях формы
 const isFieldFocused = () => document.activeElement === hashtagInput || document.activeElement === descriptionInput;
 
-// Функция отображения формы
-const openPictureEditForm = () => {
+// Функция проверки нажатия клавиши "Escape"
+const onDocumentKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    // eslint-disable-next-line
+    closePictureForm();
+  }
+};
+
+// Функция открытия формы
+const openPictureForm = () => {
   pictureUploadForm.classList.remove('hidden');
+  document.addEventListener('keydown', onDocumentKeydown);
+
   sliderContainer.classList.add('hidden');
   document.body.classList.add('.modal-open');
 
@@ -34,27 +59,27 @@ const openPictureEditForm = () => {
   });
 };
 
-// Обработчики закрытия формы
-cancelButton.addEventListener('click', () => {
+// Функция закрытия формы
+const closePictureForm = () => {
   pictureUploadForm.classList.add('hidden');
-  formNode.reset();
+  document.removeEventListener('keydown', onDocumentKeydown);
 
+  formNode.reset();
   uploadedPicture.style.filter = 'none';
   if (slider.noUiSlider) {
     slider.noUiSlider.destroy();
   }
+};
+
+// Обработчик события нажатия кнопки закрытия формы
+pictureFormCancelButton.addEventListener('click', () => {
+  closePictureForm();
 });
 
+// Обработчик события нажатия клавиши "Escape"
 document.addEventListener('keydown', (evt) => {
   if (evt.key === 'Escape' && !isFieldFocused()) {
-    evt.preventDefault();
-    pictureUploadForm.classList.add('hidden');
-    formNode.reset();
-
-    uploadedPicture.style.filter = 'none';
-    if (slider.noUiSlider) {
-      slider.noUiSlider.destroy();
-    }
+    closePictureForm();
   }
 });
 
@@ -112,18 +137,34 @@ pristine.addValidator(hashtagInput, isValidQuantityHashtags, 'Превышено
 pristine.addValidator(hashtagInput, areValidUniqueHashtags, 'Введенные хэштеги повторяются');
 pristine.addValidator(descriptionInput, isValidDescription, 'Максимальная длина введенного комментария 140 символов');
 
-// Обработчик отправки формы
-formNode.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  const isValid = pristine.validate();
-  if (isValid) {
-    const formData = new FormData(evt.target);
-    sendData(formData)
-      .then(() => formNode.reset())
-      .catch(() => {
-        console.log('Error');
-      });
-  }
-});
+// Функции блокировки кнопок после отправки формы
+const blockSubmitButton = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = SubmitButtonText.SENDING;
+};
 
-export { pictureUploadInput, openPictureEditForm };
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = SubmitButtonText.IDLE;
+};
+
+// Функция отправки формы
+const setPictureFormSubmit = (onSuccess) => {
+  formNode.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      sendData(new FormData(evt.target))
+        .then(onSuccess)
+        .catch(sendErrorAlert)
+        .finally(() => {
+          sendAlert();
+          unblockSubmitButton();
+        });
+    }
+  });
+};
+
+export { pictureUploadInput, openPictureForm, closePictureForm, setPictureFormSubmit };
