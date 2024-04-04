@@ -15,6 +15,10 @@ const sliderContainer = document.querySelector('.effect-level');
 const effectContainer = document.querySelector('.effects');
 const uploadedPicture = document.querySelector('.img-upload__preview img');
 const submitButton = document.querySelector('.img-upload__submit');
+const newPicture = document.querySelector('.img-upload__preview img');
+
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+
 
 // Дополнительное состояние кнопки
 const SubmitButtonText = {
@@ -44,6 +48,18 @@ const onDocumentKeydown = (evt) => {
     closePictureForm();
   }
 };
+
+// Обработчик загрузки выбранного изображения
+
+pictureUploadInput.addEventListener('change', () => {
+  const file = pictureUploadInput.files[0];
+  const currentPicture = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((it) => currentPicture.endsWith(it));
+
+  if (matches) {
+    newPicture.src = URL.createObjectURL(file);
+  }
+});
 
 // Функция открытия формы
 const openPictureForm = () => {
