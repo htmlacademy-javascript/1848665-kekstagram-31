@@ -1,5 +1,6 @@
 import { data } from './data.js';
 import { renderThumbnails } from './render-thumbnails.js';
+import { showFilters, filteredThumbnails } from './filter-thumbnails.js';
 import { openBigPicture } from './open-big-picture.js';
 import { pictureUploadInput, openPictureForm, closePictureForm, setPictureFormSubmit } from './picture-form.js';
 
@@ -26,3 +27,9 @@ pictureUploadInput.addEventListener('change', (evt) => {
 
 // Функция отправки формы
 setPictureFormSubmit(closePictureForm);
+
+// Функция отображения фильтров
+showFilters();
+
+// Функция отрисовки отфильтрованных миниатюр
+filteredThumbnails(renderThumbnails, data);
