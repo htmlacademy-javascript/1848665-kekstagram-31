@@ -17,7 +17,7 @@ thumbnailList.addEventListener('click', (evt) => {
   }
 });
 
-// Обработчик открытия формы
+// Обработчик открытия формы полного изображения
 pictureUploadInput.addEventListener('change', (evt) => {
   const selectedPicture = evt.target.files[0];
   if (selectedPicture) {
