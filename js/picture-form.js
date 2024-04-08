@@ -231,4 +231,4 @@ function setPictureFormSubmit(onSuccess) {
   });
 }
 
-export { openPictureForm, closePictureForm, setPictureFormSubmit, onDocumentKeydown };
+export { openPictureForm, closePictureForm, setPictureFormSubmit };
