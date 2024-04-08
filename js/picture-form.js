@@ -1,4 +1,4 @@
-import { isEscapeKey, sendAlert, sendErrorAlert } from './util.js';
+import { isEscapeKey } from './util.js';
 import { slider, effectOptions, renderEffect } from './effects-slider.js';
 import { sendData } from './api.js';
 
@@ -15,10 +15,9 @@ const sliderContainer = document.querySelector('.effect-level');
 const effectContainer = document.querySelector('.effects');
 const uploadedPicture = document.querySelector('.img-upload__preview img');
 const submitButton = document.querySelector('.img-upload__submit');
-const newPicture = document.querySelector('.img-upload__preview img');
+const effectsPreview = document.querySelectorAll('.effects__preview');
 
-const FILE_TYPES = ['jpg', 'jpeg', 'png'];
-
+const MAX_COMMENT_LENGTH = 140;
 
 // Дополнительное состояние кнопки
 const SubmitButtonText = {
@@ -40,34 +39,99 @@ const hashtagRegex = /^#[a-zа-яё0-9]{1,19}$/i;
 // Функция для проверки фокуса на полях формы
 const isFieldFocused = () => document.activeElement === hashtagInput || document.activeElement === descriptionInput;
 
-// Функция проверки нажатия клавиши "Escape"
-const onDocumentKeydown = (evt) => {
-  if (isEscapeKey(evt)) {
-    evt.preventDefault();
-    // eslint-disable-next-line
-    closePictureForm();
+// Функция показа сообщения об ошибке отправки формы
+const sendErrorAlert = () => {
+  const templateSendErrorAlert = document.querySelector('#error').content.querySelector('.error');
+  const newAlert = templateSendErrorAlert.cloneNode(true);
+  document.body.appendChild(newAlert);
+  const buttonAlert = document.body.querySelector('.error__button');
+  const containerAlert = document.body.querySelector('.error__inner');
+  buttonAlert.addEventListener('click', () => {
+    newAlert.remove();
+  });
+
+  document.removeEventListener('keydown', onDocumentKeydown);
+
+  document.addEventListener('keydown', (evt) => {
+    if (evt.key === 'Escape' && (evt.target !== newAlert)) {
+      newAlert.remove();
+      document.addEventListener('keydown', onDocumentKeydown);
+    }
+  });
+
+  document.addEventListener('click', (evt) => {
+    if (evt.target !== containerAlert) {
+      newAlert.remove();
+    }
+  });
+};
+
+// Функция показа сообщения о успешной отправке формы
+const sendAlert = () => {
+  const templateSendAlert = document.querySelector('#success').content.querySelector('.success');
+  const newAlert = templateSendAlert.cloneNode(true);
+  document.body.appendChild(newAlert);
+  const buttonAlert = document.body.querySelector('.success__button');
+  const containerAlert = document.body.querySelector('.success__inner');
+  buttonAlert.addEventListener('click', () => {
+    newAlert.remove();
+  });
+
+  document.addEventListener('keydown', (evt) => {
+    if (evt.key === 'Escape' && (evt.target !== newAlert)) {
+      newAlert.remove();
+
+    }
+  });
+
+  document.addEventListener('click', (evt) => {
+    if (evt.target !== containerAlert) {
+      newAlert.remove();
+    }
+  });
+};
+
+// Валидация формы редактирования изображения
+const pristine = new Pristine(formNode, {
+  classTo: 'img-upload__field-wrapper',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextClass: 'img-upload__field-wrapper--error',
+});
+
+
+// Функция закрытия формы
+const closePictureForm = () => {
+  pictureUploadForm.classList.add('hidden');
+  pristine.reset();
+  document.removeEventListener('keydown', onDocumentKeydown);
+
+  formNode.reset();
+  scaleControl.setAttribute('value', `${100}%`);
+  uploadedPicture.style.filter = 'none';
+  document.body.classList.remove('modal-open');
+  if (slider.noUiSlider) {
+    slider.noUiSlider.destroy();
   }
 };
 
-// Обработчик загрузки выбранного изображения
-
-pictureUploadInput.addEventListener('change', () => {
-  const file = pictureUploadInput.files[0];
-  const currentPicture = file.name.toLowerCase();
-  const matches = FILE_TYPES.some((it) => currentPicture.endsWith(it));
-
-  if (matches) {
-    newPicture.src = URL.createObjectURL(file);
+// Функция проверки нажатия клавиши "Escape"
+// Хостинг нужен что бы использовать функцию в closePictureForm() до ее обьявления
+function onDocumentKeydown(evt) {
+  if (isEscapeKey(evt) && !isFieldFocused()) {
+    evt.preventDefault();
+    closePictureForm();
   }
-});
+}
 
 // Функция открытия формы
 const openPictureForm = () => {
   pictureUploadForm.classList.remove('hidden');
   document.addEventListener('keydown', onDocumentKeydown);
 
+  setPictureFormSubmit(closePictureForm);
+
   sliderContainer.classList.add('hidden');
-  document.body.classList.add('.modal-open');
+  document.body.classList.add('modal-open');
 
   effectContainer.addEventListener('change', (evt) => {
     const currentEffect = evt.target.value;
@@ -75,28 +139,22 @@ const openPictureForm = () => {
   });
 };
 
-// Функция закрытия формы
-const closePictureForm = () => {
-  pictureUploadForm.classList.add('hidden');
-  document.removeEventListener('keydown', onDocumentKeydown);
+// Обработчик открытия формы полного изображения
+pictureUploadInput.addEventListener('change', () => {
+  const file = pictureUploadInput.files[0];
+  if (file) {
+    uploadedPicture.src = URL.createObjectURL(file);
 
-  formNode.reset();
-  uploadedPicture.style.filter = 'none';
-  if (slider.noUiSlider) {
-    slider.noUiSlider.destroy();
+    effectsPreview.forEach((element) => {
+      element.style.backgroundImage = `url(${uploadedPicture.src})`;
+    });
+    openPictureForm(file);
   }
-};
+});
 
 // Обработчик события нажатия кнопки закрытия формы
 pictureFormCancelButton.addEventListener('click', () => {
   closePictureForm();
-});
-
-// Обработчик события нажатия клавиши "Escape"
-document.addEventListener('keydown', (evt) => {
-  if (evt.key === 'Escape' && !isFieldFocused()) {
-    closePictureForm();
-  }
 });
 
 // Изменение масштаба изображения
@@ -120,33 +178,23 @@ scaleUpButton.addEventListener('click', () => {
   uploadedPicture.style.transform = `scale(${currentScale / 100})`;
 });
 
-// Валидация формы редактирования изображения
-const pristine = new Pristine(formNode, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper--error',
-});
-
 const isValidHashtag = (hashtags) => {
-  const arrayHashtags = hashtags.split(' ').filter(Boolean);
+  const arrayHashtags = hashtags.toLowerCase().split(' ').filter(Boolean);
   return arrayHashtags.every((hashtag) => hashtagRegex.test(hashtag));
 };
 
 const isValidQuantityHashtags = (hashtags) => {
-  const arrayHashtags = hashtags.split(' ').filter(Boolean);
+  const arrayHashtags = hashtags.toLowerCase().split(' ').filter(Boolean);
   return arrayHashtags.length <= MAX_HASHTAGS_COUNT;
 };
 
 const areValidUniqueHashtags = (hashtags) => {
-  const arrayHashtags = hashtags.split(' ').filter(Boolean);
+  const arrayHashtags = hashtags.toLowerCase().split(' ').filter(Boolean);
   const arrayUniqueHashtags = new Set(arrayHashtags);
   return arrayHashtags.length === arrayUniqueHashtags.size;
 };
 
-const isValidDescription = (description) => {
-  const descriptionRegex = /.{0,140}/;
-  return descriptionRegex.test(description);
-};
+const isValidDescription = (description) => description.length <= MAX_COMMENT_LENGTH;
 
 pristine.addValidator(hashtagInput, isValidHashtag, 'Введён невалидный хэштег');
 pristine.addValidator(hashtagInput, isValidQuantityHashtags, 'Превышено количество введенных хэштегов');
@@ -165,7 +213,7 @@ const unblockSubmitButton = () => {
 };
 
 // Функция отправки формы
-const setPictureFormSubmit = (onSuccess) => {
+function setPictureFormSubmit(onSuccess) {
   formNode.addEventListener('submit', (evt) => {
     evt.preventDefault();
 
@@ -173,14 +221,14 @@ const setPictureFormSubmit = (onSuccess) => {
     if (isValid) {
       blockSubmitButton();
       sendData(new FormData(evt.target))
-        .then(onSuccess)
-        .catch(sendErrorAlert)
-        .finally(() => {
+        .then(() => {
+          onSuccess();
           sendAlert();
-          unblockSubmitButton();
-        });
+        })
+        .catch(sendErrorAlert)
+        .finally(unblockSubmitButton);
     }
   });
-};
+}
 
-export { pictureUploadInput, openPictureForm, closePictureForm, setPictureFormSubmit };
+export { openPictureForm, closePictureForm, setPictureFormSubmit, onDocumentKeydown };
