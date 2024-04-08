@@ -27,10 +27,11 @@ const openBigPicture = (pictureId) => {
 
   // Отображение модального окна
   bigPicture.classList.remove('hidden');
-  document.body.classList.add('.modal-open');
+  document.body.classList.add('modal-open');
 
   // Обработчик закрытия модального окна по кнопке
   cancelButton.addEventListener('click', () => {
+    document.body.classList.remove('modal-open');
     bigPicture.classList.add('hidden');
   });
 
@@ -38,6 +39,7 @@ const openBigPicture = (pictureId) => {
   document.addEventListener('keydown', (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      document.body.classList.remove('modal-open');
       bigPicture.classList.add('hidden');
     }
   });

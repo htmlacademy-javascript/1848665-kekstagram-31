@@ -1,5 +1,7 @@
 const ALERT_SHOW_TIME = 5000;
 
+import {onDocumentKeydown} from './picture-form.js';
+
 // Получение рандомного числа из диапазона
 const generateRandomInteger = (a, b) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -23,7 +25,7 @@ const generateRandomId = () => {
 // Функция проверки нажатия клавиши "Escape"
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-// Функция показа сообщения об ошибки загрузки данных
+// Функция показа сообщения об ошибке загрузки данных
 const getErrorAlert = () => {
   const templateGetAlert = document.querySelector('#data-error').content.querySelector('.data-error');
   const newAlert = templateGetAlert.cloneNode(true);
@@ -34,7 +36,7 @@ const getErrorAlert = () => {
   }, ALERT_SHOW_TIME);
 };
 
-// Функция показа сообщения об ошибки отправки формы
+// Функция показа сообщения об ошибке отправки формы
 const sendErrorAlert = () => {
   const templateSendErrorAlert = document.querySelector('#error').content.querySelector('.error');
   const newAlert = templateSendErrorAlert.cloneNode(true);
@@ -45,9 +47,12 @@ const sendErrorAlert = () => {
     newAlert.remove();
   });
 
+  document.removeEventListener('keydown', onDocumentKeydown);
+
   document.addEventListener('keydown', (evt) => {
     if (evt.key === 'Escape' && (evt.target !== newAlert)) {
       newAlert.remove();
+      document.addEventListener('keydown', onDocumentKeydown);
     }
   });
 
@@ -72,6 +77,7 @@ const sendAlert = () => {
   document.addEventListener('keydown', (evt) => {
     if (evt.key === 'Escape' && (evt.target !== newAlert)) {
       newAlert.remove();
+
     }
   });
 
@@ -86,15 +92,6 @@ const sendAlert = () => {
 const removeElements = (removedElements) => {
   const elementsToRemove = document.querySelectorAll(removedElements);
   elementsToRemove.forEach((element) => element.remove());
-};
-
-// Функция для случайного перемешивания элементов массива
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
 };
 
 function debounce (callback, timeoutDelay = 500) {
@@ -115,4 +112,4 @@ function debounce (callback, timeoutDelay = 500) {
   };
 }
 
-export { generateRandomInteger, generateRandomArrayElement, generateRandomId, isEscapeKey, getErrorAlert, sendErrorAlert, sendAlert, shuffleArray, removeElements, debounce };
+export { generateRandomInteger, generateRandomArrayElement, generateRandomId, isEscapeKey, getErrorAlert, sendErrorAlert, sendAlert, removeElements, debounce };

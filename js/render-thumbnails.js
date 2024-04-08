@@ -1,5 +1,9 @@
+import { debounce } from './util';
+import { showFilters } from './filter-thumbnails.js';
+
 const thumbnailList = document.querySelector('.pictures');
 const templateThumbnail = document.querySelector('#picture').content.querySelector('.picture');
+const TIMEOUT_DELAY_DEBOUNCE = 500;
 
 const renderThumbnails = (thumbnails) => {
   const thumbnailCardListFragment = document.createDocumentFragment();
@@ -15,7 +19,11 @@ const renderThumbnails = (thumbnails) => {
   });
 
   // Добавление фрамента с миниатюрами в список
-  return thumbnailList.appendChild(thumbnailCardListFragment);
+  thumbnailList.appendChild(thumbnailCardListFragment);
+
+  showFilters();
 };
 
-export { renderThumbnails };
+const renderThumbnailsDebounced = debounce((data) => renderThumbnails(data), TIMEOUT_DELAY_DEBOUNCE);
+
+export { renderThumbnailsDebounced };

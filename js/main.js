@@ -1,13 +1,18 @@
 import { data } from './data.js';
-import { renderThumbnails } from './render-thumbnails.js';
-import { showFilters, filteredThumbnails } from './filter-thumbnails.js';
+import { renderThumbnailsDebounced } from './render-thumbnails.js';
+import { filteredThumbnails } from './filter-thumbnails.js';
 import { openBigPicture } from './open-big-picture.js';
-import { pictureUploadInput, openPictureForm, closePictureForm, setPictureFormSubmit } from './picture-form.js';
+// import { closePictureForm, setPictureFormSubmit } from './picture-form.js';
 
 const thumbnailList = document.querySelector('.pictures');
 
-// Функция отрисовки полученных миниатюр
-renderThumbnails(data);
+if (data) {
+  // Функция отрисовки полученных миниатюр
+  renderThumbnailsDebounced(data);
+
+  // Функция отрисовки отфильтрованных миниатюр
+  filteredThumbnails(renderThumbnailsDebounced, data);
+}
 
 // Обработчик нажатия на миниатюру
 thumbnailList.addEventListener('click', (evt) => {
@@ -17,19 +22,5 @@ thumbnailList.addEventListener('click', (evt) => {
   }
 });
 
-// Обработчик открытия формы полного изображения
-pictureUploadInput.addEventListener('change', (evt) => {
-  const selectedPicture = evt.target.files[0];
-  if (selectedPicture) {
-    openPictureForm(selectedPicture);
-  }
-});
-
 // Функция отправки формы
-setPictureFormSubmit(closePictureForm);
-
-// Функция отображения фильтров
-showFilters();
-
-// Функция отрисовки отфильтрованных миниатюр
-filteredThumbnails(renderThumbnails, data);
+// setPictureFormSubmit(closePictureForm);
