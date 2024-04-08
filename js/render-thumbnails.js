@@ -1,10 +1,14 @@
 import { removeElements, debounce } from './util';
-import { showFilters } from './filter-thumbnails.js';
 
+const filtersContainer = document.querySelector('.img-filters');
 const picturesContainer = document.querySelector('.pictures');
 const thumbnailTemplate = document.querySelector('#picture').content.querySelector('.picture');
+
 // Задержка для debounce
 const DEBOUNCE_DELAY = 500;
+
+// Функция, показывающая фильтры
+const showFilters = () => filtersContainer.classList.remove('img-filters--inactive');
 
 // Создает элемент миниатюры на основе данных
 const createThumbnailElement = ({ id, url, description, likes, comments }) => {

@@ -2,7 +2,7 @@ import { data } from './data.js';
 import { renderThumbnailsDebounced } from './render-thumbnails.js';
 import { applyFilteredThumbnails } from './filter-thumbnails.js';
 import { openBigPicture } from './picture-modal.js';
-// import { closePictureForm, setPictureFormSubmit } from './picture-form.js';
+import './picture-form.js';
 
 const thumbnailList = document.querySelector('.pictures');
 

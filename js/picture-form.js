@@ -1,4 +1,4 @@
-import { isEscapeKey, sendAlert, sendErrorAlert } from './util.js';
+import { isEscapeKey } from './util.js';
 import { slider, effectOptions, renderEffect } from './effects-slider.js';
 import { sendData } from './api.js';
 
@@ -38,6 +38,65 @@ const hashtagRegex = /^#[a-zа-яё0-9]{1,19}$/i;
 
 // Функция для проверки фокуса на полях формы
 const isFieldFocused = () => document.activeElement === hashtagInput || document.activeElement === descriptionInput;
+
+// Функция показа сообщения об ошибке отправки формы
+const sendErrorAlert = () => {
+  const templateSendErrorAlert = document.querySelector('#error').content.querySelector('.error');
+  const newAlert = templateSendErrorAlert.cloneNode(true);
+  document.body.appendChild(newAlert);
+  const buttonAlert = document.body.querySelector('.error__button');
+  const containerAlert = document.body.querySelector('.error__inner');
+  buttonAlert.addEventListener('click', () => {
+    newAlert.remove();
+  });
+
+  document.removeEventListener('keydown', onDocumentKeydown);
+
+  document.addEventListener('keydown', (evt) => {
+    if (evt.key === 'Escape' && (evt.target !== newAlert)) {
+      newAlert.remove();
+      document.addEventListener('keydown', onDocumentKeydown);
+    }
+  });
+
+  document.addEventListener('click', (evt) => {
+    if (evt.target !== containerAlert) {
+      newAlert.remove();
+    }
+  });
+};
+
+// Функция показа сообщения о успешной отправке формы
+const sendAlert = () => {
+  const templateSendAlert = document.querySelector('#success').content.querySelector('.success');
+  const newAlert = templateSendAlert.cloneNode(true);
+  document.body.appendChild(newAlert);
+  const buttonAlert = document.body.querySelector('.success__button');
+  const containerAlert = document.body.querySelector('.success__inner');
+  buttonAlert.addEventListener('click', () => {
+    newAlert.remove();
+  });
+
+  document.addEventListener('keydown', (evt) => {
+    if (evt.key === 'Escape' && (evt.target !== newAlert)) {
+      newAlert.remove();
+
+    }
+  });
+
+  document.addEventListener('click', (evt) => {
+    if (evt.target !== containerAlert) {
+      newAlert.remove();
+    }
+  });
+};
+
+// Валидация формы редактирования изображения
+const pristine = new Pristine(formNode, {
+  classTo: 'img-upload__field-wrapper',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextClass: 'img-upload__field-wrapper--error',
+});
 
 
 // Функция закрытия формы
@@ -93,7 +152,6 @@ pictureUploadInput.addEventListener('change', () => {
   }
 });
 
-
 // Обработчик события нажатия кнопки закрытия формы
 pictureFormCancelButton.addEventListener('click', () => {
   closePictureForm();
@@ -118,13 +176,6 @@ scaleUpButton.addEventListener('click', () => {
   scaleControl.value = `${currentScale}%`;
   scaleControl.setAttribute('value', `${currentScale}%`);
   uploadedPicture.style.transform = `scale(${currentScale / 100})`;
-});
-
-// Валидация формы редактирования изображения
-const pristine = new Pristine(formNode, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper--error',
 });
 
 const isValidHashtag = (hashtags) => {
@@ -178,22 +229,6 @@ function setPictureFormSubmit(onSuccess) {
         .finally(unblockSubmitButton);
     }
   });
-
-  // submitButton.addEventListener('click', (e) => {
-  //   e.preventDefault();
-
-  //   const isValid = pristine.validate();
-  //   if (isValid) {
-  //     blockSubmitButton();
-  //     sendData(new FormData(formNode))
-  //       .then(() => {
-  //         onSuccess();
-  //         sendAlert();
-  //       })
-  //       .catch(sendErrorAlert)
-  //       .finally(unblockSubmitButton);
-  //   }
-  // });
 }
 
 export { openPictureForm, closePictureForm, setPictureFormSubmit, onDocumentKeydown };

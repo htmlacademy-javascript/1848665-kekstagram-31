@@ -21,9 +21,6 @@ const filterFunctions = {
   'filter-random': getRandomFilter,
 };
 
-// Функция, показывающая фильтры
-const showFilters = () => filtersContainer.classList.remove('img-filters--inactive');
-
 // Функция, переключающая активный фильтр
 const toggleActiveFilter = (evt) => {
   if (evt.target.classList.contains('img-filters__button')) {
@@ -45,5 +42,5 @@ const applyFilteredThumbnails = (thumbnails, callback) => {
   });
 };
 
-export { showFilters, applyFilteredThumbnails };
+export { applyFilteredThumbnails };
 
