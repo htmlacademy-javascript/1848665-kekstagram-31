@@ -1,14 +1,14 @@
 import { data } from './data.js';
 import { clearComments, renderComments } from './render-comments.js';
 
-const bigPicture = document.querySelector('.big-picture');
-const imgPicture = bigPicture.querySelector('.big-picture__img').querySelector('img');
-const countLikes = bigPicture.querySelector('.likes-count');
-const descriptionPicture = bigPicture.querySelector('.social__caption');
-const cancelButton = bigPicture.querySelector('.big-picture__cancel');
-const totalComments = bigPicture.querySelector('.social__comment-total-count');
+const pictureModal = document.querySelector('.big-picture');
+const modalImage = pictureModal.querySelector('.big-picture__img').querySelector('img');
+const likesCount = pictureModal.querySelector('.likes-count');
+const pictureDescription = pictureModal.querySelector('.social__caption');
+const closeButton = pictureModal.querySelector('.big-picture__cancel');
+const totalComments = pictureModal.querySelector('.social__comment-total-count');
 
-// Событие отображения модального окна
+// Отображает модальное окно
 const openBigPicture = (pictureId) => {
   // Получение обьекта выбранной миниатюры с массива
   const currentThumbnail = data.find((num) => num.id === Number(pictureId));
@@ -20,19 +20,19 @@ const openBigPicture = (pictureId) => {
   renderComments(currentThumbnail.comments);
 
   // Заполнение данных в модальном окне
-  imgPicture.src = currentThumbnail.url;
-  countLikes.textContent = currentThumbnail.likes;
-  descriptionPicture.textContent = currentThumbnail.description;
+  modalImage.src = currentThumbnail.url;
+  likesCount.textContent = currentThumbnail.likes;
+  pictureDescription.textContent = currentThumbnail.description;
   totalComments.textContent = currentThumbnail.comments.length;
 
   // Отображение модального окна
-  bigPicture.classList.remove('hidden');
+  pictureModal.classList.remove('hidden');
   document.body.classList.add('modal-open');
 
   // Обработчик закрытия модального окна по кнопке
-  cancelButton.addEventListener('click', () => {
+  closeButton.addEventListener('click', () => {
     document.body.classList.remove('modal-open');
-    bigPicture.classList.add('hidden');
+    pictureModal.classList.add('hidden');
   });
 
   // Обработчик закрытия модального окна по клавише
@@ -40,7 +40,7 @@ const openBigPicture = (pictureId) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
       document.body.classList.remove('modal-open');
-      bigPicture.classList.add('hidden');
+      pictureModal.classList.add('hidden');
     }
   });
 };

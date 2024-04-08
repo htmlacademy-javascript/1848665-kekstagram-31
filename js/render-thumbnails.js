@@ -1,29 +1,41 @@
-import { debounce } from './util';
+import { removeElements, debounce } from './util';
 import { showFilters } from './filter-thumbnails.js';
 
-const thumbnailList = document.querySelector('.pictures');
-const templateThumbnail = document.querySelector('#picture').content.querySelector('.picture');
-const TIMEOUT_DELAY_DEBOUNCE = 500;
+const picturesContainer = document.querySelector('.pictures');
+const thumbnailTemplate = document.querySelector('#picture').content.querySelector('.picture');
+// Задержка для debounce
+const DEBOUNCE_DELAY = 500;
 
+// Создает элемент миниатюры на основе данных
+const createThumbnailElement = ({ id, url, description, likes, comments }) => {
+  const thumbnail = thumbnailTemplate.cloneNode(true);
+  // Устанавливаем идентификатор миниатюры
+  thumbnail.dataset.pictureId = id;
+  thumbnail.querySelector('.picture__img').src = url;
+  thumbnail.querySelector('.picture__img').alt = description;
+  thumbnail.querySelector('.picture__likes').textContent = likes;
+  thumbnail.querySelector('.picture__comments').textContent = comments.length;
+  return thumbnail;
+};
+
+// Отрисовывает миниатюры в контейнере
 const renderThumbnails = (thumbnails) => {
-  const thumbnailCardListFragment = document.createDocumentFragment();
+  const thumbnailFragment = document.createDocumentFragment();
 
-  thumbnails.forEach(({id, url, description, likes, comments}) => {
-    const thumbnail = templateThumbnail.cloneNode(true);
-    thumbnail.dataset.pictureId = id;
-    thumbnail.querySelector('.picture__img').src = url;
-    thumbnail.querySelector('.picture__img').alt = description;
-    thumbnail.querySelector('.picture__likes').textContent = likes;
-    thumbnail.querySelector('.picture__comments').textContent = comments.length;
-    thumbnailCardListFragment.appendChild(thumbnail);
+  // Перебираем миниатюры и добавляем их в фрагмент
+  thumbnails.forEach((thumbnail) => {
+    thumbnailFragment.appendChild(createThumbnailElement(thumbnail));
   });
 
-  // Добавление фрамента с миниатюрами в список
-  thumbnailList.appendChild(thumbnailCardListFragment);
+  // Очищаем существующие миниатюры
+  removeElements('.picture');
+  picturesContainer.appendChild(thumbnailFragment);
 
+  // Показываем фильтры
   showFilters();
 };
 
-const renderThumbnailsDebounced = debounce((data) => renderThumbnails(data), TIMEOUT_DELAY_DEBOUNCE);
+// Создаем debounced версию функции renderThumbnails
+const renderThumbnailsDebounced = debounce(renderThumbnails, DEBOUNCE_DELAY);
 
 export { renderThumbnailsDebounced };

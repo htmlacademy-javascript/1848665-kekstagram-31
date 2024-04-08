@@ -1,6 +1,6 @@
-const ALERT_SHOW_TIME = 5000;
+import { onDocumentKeydown } from './picture-form.js';
 
-import {onDocumentKeydown} from './picture-form.js';
+const ALERT_SHOW_TIME = 5000;
 
 // Получение рандомного числа из диапазона
 const generateRandomInteger = (a, b) => {
@@ -12,15 +12,6 @@ const generateRandomInteger = (a, b) => {
 
 // Получение случайного элемента массива
 const generateRandomArrayElement = (elements) => elements[generateRandomInteger(0, elements.length - 1)];
-
-// Счетчик на замыкании
-const generateRandomId = () => {
-  let lastGeneratedId = 0;
-  return function () {
-    lastGeneratedId += 1;
-    return lastGeneratedId;
-  };
-};
 
 // Функция проверки нажатия клавиши "Escape"
 const isEscapeKey = (evt) => evt.key === 'Escape';
@@ -112,4 +103,4 @@ function debounce (callback, timeoutDelay = 500) {
   };
 }
 
-export { generateRandomInteger, generateRandomArrayElement, generateRandomId, isEscapeKey, getErrorAlert, sendErrorAlert, sendAlert, removeElements, debounce };
+export { generateRandomInteger, generateRandomArrayElement, isEscapeKey, getErrorAlert, sendErrorAlert, sendAlert, removeElements, debounce };
