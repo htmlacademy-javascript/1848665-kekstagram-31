@@ -1,5 +1,5 @@
 import { isEscapeKey } from './util.js';
-import { slider, effectOptions, renderEffect } from './effects-slider.js';
+import { effectSlider, renderEffect } from './effects-slider.js';
 import { sendData } from './api.js';
 
 const formNode = document.querySelector('.img-upload__form');
@@ -109,8 +109,8 @@ const closePictureForm = () => {
   scaleControl.setAttribute('value', `${100}%`);
   uploadedPicture.style.filter = 'none';
   document.body.classList.remove('modal-open');
-  if (slider.noUiSlider) {
-    slider.noUiSlider.destroy();
+  if (effectSlider.noUiSlider) {
+    effectSlider.noUiSlider.destroy();
   }
 };
 
@@ -135,7 +135,7 @@ const openPictureForm = () => {
 
   effectContainer.addEventListener('change', (evt) => {
     const currentEffect = evt.target.value;
-    renderEffect(effectOptions[currentEffect]);
+    renderEffect(currentEffect);
   });
 };
 
